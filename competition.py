@@ -11,6 +11,14 @@ from sklearn.metrics import mean_squared_error, r2_score
 train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 
+# Informations sur les datasets
+print(train.info())
+print(test.info())
+
+# Statistiques descriptives des datasets
+print(train.describe())
+print(test.describe())
+
 # Affichage histogramme
 plt.figure(figsize=(10, 6))
 sns.histplot(train['SalePrice'], kde=True)
@@ -47,7 +55,7 @@ plt.show()
 numeric_cols = train.select_dtypes(include=[np.number]).columns.drop('SalePrice')
 non_numeric_cols = train.select_dtypes(exclude=[np.number]).columns
 
-# Remplissage des données manquante par les médians et les modes
+# Remplissage des données manquantes par les médianes et les modes
 train[numeric_cols] = train[numeric_cols].fillna(train[numeric_cols].median())
 test[numeric_cols] = test[numeric_cols].fillna(test[numeric_cols].median())
 train[non_numeric_cols] = train[non_numeric_cols].fillna(train[non_numeric_cols].mode().iloc[0])
@@ -57,7 +65,7 @@ test[non_numeric_cols] = test[non_numeric_cols].fillna(test[non_numeric_cols].mo
 train = pd.get_dummies(train)
 test = pd.get_dummies(test)
 
-# Aligner les colonnes de train et test en supprimant les colonnes supplémentaire de test et en ajoutant à test les colonnes supplémentaires de train
+# Aligner les colonnes de train et test en supprimant les colonnes supplémentaires de test et en ajoutant à test les colonnes supplémentaires de train
 train, test = train.align(test, join='left', axis=1)
 test.fillna(0, inplace=True)
 
@@ -72,5 +80,24 @@ X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_st
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_val = scaler.transform(X_val)
-test = test.drop('SalePrice', axis=1, errors='ignore')
-test = scaler.transform(test)
+X_test = test.drop('SalePrice', axis=1, errors='ignore')  # Utilisation de test sans la colonne 'SalePrice'
+X_test = scaler.transform(X_test)
+
+# Entrainement du modèle de régression linéaire
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Calcule mse + r2 pour voir si notre modèle a bien appris
+y_val_pred = model.predict(X_val)
+mse = mean_squared_error(y_val, y_val_pred)
+r2 = r2_score(y_val, y_val_pred)
+print(f'Mean Squared Error: {mse}')
+print(f'R^2 Score: {r2}')
+
+# Faire des prédictions sur l'ensemble de test
+y_test_pred = model.predict(X_test)
+
+# Préparer le fichier de soumission
+# Utilisation de test.index d'origine
+submission = pd.DataFrame({'Id': test.index, 'SalePrice': y_test_pred})
+submission.to_csv('submission.csv', index=False)
