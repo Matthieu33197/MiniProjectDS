@@ -28,10 +28,12 @@ plt.show()
 
 # Scatter plot de quelques caractéristiques importantes
 important_features = ['OverallQual', 'GrLivArea', 'GarageCars', 'TotalBsmtSF']
-for feature in important_features:
-    plt.figure(figsize=(8, 6))
-    sns.scatterplot(data=train, x=feature, y='SalePrice')
-    plt.title(f'{feature} vs Prix de Vente')
-    plt.xlabel(feature)
-    plt.ylabel('Prix de Vente')
-    plt.show()
+fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(16, 12))
+axes = axes.flatten()
+for i, feature in enumerate(important_features):
+    sns.scatterplot(data=train, x=feature, y='SalePrice', ax=axes[i])
+    axes[i].set_title(f'{feature} vs Prix de Vente')
+    axes[i].set_xlabel(feature)
+    axes[i].set_ylabel('Prix de Vente')
+plt.tight_layout()
+plt.show()
