@@ -18,6 +18,7 @@ plt.show()
 # Heatmap des corrélations
 numeric_cols = train.select_dtypes(include=[np.number])
 corr_matrix = numeric_cols.corr()
+corr_matrix = corr_matrix[(corr_matrix != 1.000) & ((corr_matrix > 0.5) | (corr_matrix < -0.2))]
 plt.figure(figsize=(20, 16)) 
 sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', center=0, annot_kws={"size": 10})
 plt.title('Matrice de Corrélation')
