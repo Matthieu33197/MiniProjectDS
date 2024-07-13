@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Préparation de la donnée
 train = pd.read_csv('train.csv')
@@ -37,3 +41,36 @@ for i, feature in enumerate(important_features):
     axes[i].set_ylabel('Prix de Vente')
 plt.tight_layout()
 plt.show()
+
+# Préparation de la donnée pour machine learning
+# Séparer les colonnes numériques et non numériques
+numeric_cols = train.select_dtypes(include=[np.number]).columns.drop('SalePrice')
+non_numeric_cols = train.select_dtypes(exclude=[np.number]).columns
+
+# Remplissage des données manquante par les médians et les modes
+train[numeric_cols] = train[numeric_cols].fillna(train[numeric_cols].median())
+test[numeric_cols] = test[numeric_cols].fillna(test[numeric_cols].median())
+train[non_numeric_cols] = train[non_numeric_cols].fillna(train[non_numeric_cols].mode().iloc[0])
+test[non_numeric_cols] = test[non_numeric_cols].fillna(test[non_numeric_cols].mode().iloc[0])
+
+# Encoder les colonnes non numériques en colonnes binaires
+train = pd.get_dummies(train)
+test = pd.get_dummies(test)
+
+# Aligner les colonnes de train et test en supprimant les colonnes supplémentaire de test et en ajoutant à test les colonnes supplémentaires de train
+train, test = train.align(test, join='left', axis=1)
+test.fillna(0, inplace=True)
+
+# Séparation des caractéristiques et la cible
+X = train.drop('SalePrice', axis=1)
+y = train['SalePrice']
+
+# Division des données en deux parties -> Entrainement et validation
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Normalisation depuis l'écart type et la moyenne
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_val = scaler.transform(X_val)
+test = test.drop('SalePrice', axis=1, errors='ignore')
+test = scaler.transform(test)
