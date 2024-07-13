@@ -25,3 +25,13 @@ plt.title('Matrice de Corrélation')
 plt.xticks(rotation=45, ha='right', fontsize=10)
 plt.yticks(fontsize=10)
 plt.show()
+
+# Scatter plot de quelques caractéristiques importantes
+important_features = ['OverallQual', 'GrLivArea', 'GarageCars', 'TotalBsmtSF']
+for feature in important_features:
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(data=train, x=feature, y='SalePrice')
+    plt.title(f'{feature} vs Prix de Vente')
+    plt.xlabel(feature)
+    plt.ylabel('Prix de Vente')
+    plt.show()
