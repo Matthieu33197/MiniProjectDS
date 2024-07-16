@@ -86,4 +86,8 @@ Le script génère une heatmap pour visualiser les corrélations entre les diff�
 
 ## Contribuer
 
+<<<<<<< HEAD
 Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+=======
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+>>>>>>> main
